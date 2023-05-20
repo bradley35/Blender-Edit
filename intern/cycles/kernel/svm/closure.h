@@ -504,6 +504,37 @@ ccl_device_noinline int svm_node_closure_bsdf(KernelGlobals kg,
       }
       break;
     }
+    case CLOSURE_BSDF_BRADLEY_BLINN_ID:
+    case CLOSURE_BSDF_BRADLEY_PHONG_ID:
+      {
+        Spectrum weight = sd->svm_closure_weight * mix_weight;
+        ccl_private BradleyBsdf *bsdf = (ccl_private BradleyBsdf *)bsdf_alloc(
+              sd, sizeof(BradleyBsdf), weight);
+        uint4 data_diff_color = read_node(kg, &offset);
+        uint4 data_spec_color = read_node(kg, &offset);
+          if(bsdf){
+              
+              float3 diffuse_color = stack_valid(data_diff_color.x) ?
+                                      stack_load_float3(stack, data_diff_color.x) :
+                                      make_float3(__uint_as_float(data_diff_color.y),
+                                                  __uint_as_float(data_diff_color.z),
+                                                  __uint_as_float(data_diff_color.w));
+              float3 specular_color = stack_valid(data_spec_color.x) ?
+                                      stack_load_float3(stack, data_spec_color.x) :
+                                      make_float3(__uint_as_float(data_spec_color.y),
+                                                  __uint_as_float(data_spec_color.z),
+                                                  __uint_as_float(data_spec_color.w));
+              bsdf->reflection = param2;
+              bsdf->diff_color = diffuse_color;
+              bsdf->spec_color = specular_color;
+              bsdf->N = N;
+
+              bsdf->type = (ClosureType)type;
+              sd->flag |= bsdf_bradley_setup(bsdf);
+          }
+
+          break;
+      }
     case CLOSURE_BSDF_TRANSPARENT_ID: {
       Spectrum weight = sd->svm_closure_weight * mix_weight;
       bsdf_transparent_setup(sd, weight, path_flag);

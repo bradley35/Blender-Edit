@@ -450,7 +450,10 @@ static void node_shader_buts_glossy(uiLayout *layout, bContext * /*C*/, PointerR
 {
   uiItemR(layout, ptr, "distribution", DEFAULT_FLAGS, "", ICON_NONE);
 }
-
+static void node_shader_bradley(uiLayout *layout, bContext * /*C*/, PointerRNA *ptr)
+{
+  uiItemR(layout, ptr, "algo", DEFAULT_FLAGS, "", ICON_NONE);
+}
 static void node_buts_output_shader(uiLayout *layout, bContext * /*C*/, PointerRNA *ptr)
 {
   uiItemR(layout, ptr, "target", DEFAULT_FLAGS, "", ICON_NONE);
@@ -507,6 +510,9 @@ static void node_shader_set_butfunc(bNodeType *ntype)
     case SH_NODE_BSDF_GLASS:
     case SH_NODE_BSDF_REFRACTION:
       ntype->draw_buttons = node_shader_buts_glossy;
+      break;
+    case SH_NODE_BSDF_BRADLEY:
+      ntype->draw_buttons = node_shader_bradley;
       break;
     case SH_NODE_OUTPUT_MATERIAL:
     case SH_NODE_OUTPUT_LIGHT:

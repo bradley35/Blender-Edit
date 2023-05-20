@@ -2808,6 +2808,61 @@ void DiffuseBsdfNode::compile(OSLCompiler &compiler)
   compiler.add(this, "node_diffuse_bsdf");
 }
 
+NODE_DEFINE(BradleyBsdfNode)
+{
+  NodeType *type = NodeType::add("bradley_bsdf", create, NodeType::SHADER);
+
+  SOCKET_IN_COLOR(color, "Diffuse Color", make_float3(0.8f, 0.8f, 0.8f));
+  SOCKET_IN_COLOR(specular_color, "Specular Color", make_float3(0.8f, 0.8f, 0.8f));
+  SOCKET_IN_NORMAL(normal, "Normal", zero_float3(), SocketType::LINK_NORMAL);
+  SOCKET_IN_FLOAT(surface_mix_weight, "SurfaceMixWeight", 0.0f, SocketType::SVM_INTERNAL);
+    
+  SOCKET_IN_FLOAT(reflection, "Reflection", 0.0f);
+
+  static NodeEnum algo_enum;
+  algo_enum.insert("PHONG", CLOSURE_BSDF_BRADLEY_PHONG_ID);
+  algo_enum.insert("BLINN", CLOSURE_BSDF_BRADLEY_BLINN_ID);
+  SOCKET_ENUM(algo, "Algo", algo_enum, CLOSURE_BSDF_BRADLEY_PHONG_ID);
+  SOCKET_OUT_CLOSURE(BSDF, "BSDF");
+
+  return type;
+}
+
+BradleyBsdfNode::BradleyBsdfNode() : BsdfNode(get_node_type())
+{
+  closure = CLOSURE_BSDF_BRADLEY_PHONG_ID;
+  algo_orig = NBUILTIN_CLOSURES;
+}
+
+void BradleyBsdfNode::compile(SVMCompiler &compiler)
+{
+    closure = algo;
+    //BsdfNode::compile(compiler, input("Slider"), NULL);
+    ShaderInput *diffuse_color_in = input("Diffuse Color");
+    ShaderInput *specular_color_in = input("Specular Color");
+    ShaderInput *normal_in = input("Normal");
+    //ShaderInput *tangent_in = input("Tangent");
+    
+    ShaderInput *slider_in = input("Reflection");
+    
+    compiler.add_node(NODE_CLOSURE_SET_WEIGHT, one_float3());//Set weight to 1
+    
+    compiler.add_node(NODE_CLOSURE_BSDF, compiler.encode_uchar4(closure, SVM_STACK_INVALID, compiler.stack_assign(slider_in), compiler.closure_mix_weight_offset()),__float_as_int(0.0f) , __float_as_int(0.0f));
+    compiler.add_node(compiler.stack_assign_if_linked(normal_in),  SVM_STACK_INVALID,SVM_STACK_INVALID, SVM_STACK_INVALID);
+    compiler.add_node(((diffuse_color_in->link) ? compiler.stack_assign(diffuse_color_in) : SVM_STACK_INVALID), __float_as_int(color.x), __float_as_int(color.y), __float_as_int(color.z));
+    compiler.add_node(((specular_color_in->link) ? compiler.stack_assign(specular_color_in) : SVM_STACK_INVALID), __float_as_int(specular_color.x), __float_as_int(specular_color.y), __float_as_int(specular_color.z));
+    
+}
+
+void BradleyBsdfNode::compile(OSLCompiler &compiler)
+{
+  closure = algo;
+  compiler.parameter(this, "algo");
+  compiler.add(this, "node_bradley_bsdf");
+}
+
+
+
 /* Disney principled BSDF Closure */
 NODE_DEFINE(PrincipledBsdfNode)
 {

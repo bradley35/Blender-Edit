@@ -634,6 +634,25 @@ class GlossyBsdfNode : public BsdfNode {
   ClosureType distribution_orig;
 };
 
+class BradleyBsdfNode : public BsdfNode {
+ public:
+  SHADER_NODE_CLASS(BradleyBsdfNode)
+
+
+  ClosureType get_closure_type()
+  {
+    return algo;
+  }
+
+  NODE_SOCKET_API(float, reflection)
+  NODE_SOCKET_API(float3, specular_color)
+  NODE_SOCKET_API(ClosureType, algo)
+
+ private:
+  float reflection_orig;
+  ClosureType algo_orig;
+};
+
 class GlassBsdfNode : public BsdfNode {
  public:
   SHADER_NODE_CLASS(GlassBsdfNode)

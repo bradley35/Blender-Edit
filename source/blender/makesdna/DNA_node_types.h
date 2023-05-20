@@ -1654,6 +1654,11 @@ typedef struct NodeShaderMix {
 #define SHD_GLOSSY_ASHIKHMIN_SHIRLEY 3
 #define SHD_GLOSSY_MULTI_GGX 4
 
+/* bradley types */
+#define SHD_BRADLEY_PHONG 0
+#define SHD_BRADLEY_BLINN 1
+
+
 /* vector transform */
 #define SHD_VECT_TRANSFORM_TYPE_VECTOR 0
 #define SHD_VECT_TRANSFORM_TYPE_POINT 1

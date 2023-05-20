@@ -126,6 +126,7 @@ set(SRC_KERNEL_CLOSURE_HEADERS
   closure/bsdf_principled_diffuse.h
   closure/bsdf_principled_sheen.h
   closure/bsdf_hair_principled.h
+  closure/bsdf_bradley.h
 )
 
 set(SRC_KERNEL_SVM_HEADERS

@@ -4622,6 +4622,21 @@ static const EnumPropertyItem node_glass_items[] = {
     {0, NULL, 0, NULL, NULL},
 };
 
+static const EnumPropertyItem node_bradley_items[] = {
+    {SHD_BRADLEY_PHONG,
+     "PHONG",
+     0,
+     "Phong Shader",
+     "Phong Illumination Model from class (no ambient)"},
+    {SHD_BRADLEY_BLINN,
+     "BLINN",
+     0,
+     "Blinn Torrance Phong Shader",
+     "Blinn Torrance Variation of Phong from class (no ambient)"},
+
+    {0, NULL, 0, NULL, NULL},
+};
+
 static const EnumPropertyItem node_refraction_items[] = {
     {SHD_GLOSSY_SHARP,
      "SHARP",
@@ -6124,7 +6139,22 @@ static void def_principled(StructRNA *srna)
   RNA_def_property_ui_text(
       prop, "Subsurface Method", "Method for rendering subsurface scattering");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_ShaderNode_socket_update");
+
+
 }
+
+static void def_bradley(StructRNA *srna)
+{
+  PropertyRNA *prop;
+
+  prop = RNA_def_property(srna, "algo", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_sdna(prop, NULL, "custom1");
+  RNA_def_property_enum_items(prop, node_bradley_items);
+  RNA_def_property_ui_text(prop, "Bradley", "Choose a shader option");
+  RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
+
+}
+
 
 static void def_refraction(StructRNA *srna)
 {

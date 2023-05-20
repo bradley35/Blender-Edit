@@ -20,6 +20,7 @@
 #include "kernel/closure/bsdf_hair_principled.h"
 #include "kernel/closure/bsdf_principled_diffuse.h"
 #include "kernel/closure/bsdf_principled_sheen.h"
+#include "kernel/closure/bsdf_bradley.h"
 #include "kernel/closure/bssrdf.h"
 #include "kernel/closure/volume.h"
 // clang-format on
@@ -232,6 +233,12 @@ ccl_device_inline int bsdf_sample(KernelGlobals kg,
       *sampled_roughness = one_float2();
       *eta = 1.0f;
       break;
+    case CLOSURE_BSDF_BRADLEY_BLINN_ID:
+    case CLOSURE_BSDF_BRADLEY_PHONG_ID:
+      label = bsdf_bradley_sample(sc, Ng, sd->wi, randu, randv, eval, wo, pdf);
+      *sampled_roughness = zero_float2();
+      *eta = 1.0f;
+    break;
 #endif
     default:
       label = LABEL_NONE;
@@ -395,6 +402,11 @@ ccl_device_inline void bsdf_roughness_eta(const KernelGlobals kg,
       *roughness = one_float2();
       *eta = 1.0f;
       break;
+      case CLOSURE_BSDF_BRADLEY_BLINN_ID:
+      case CLOSURE_BSDF_BRADLEY_PHONG_ID:
+          *roughness = zero_float2();
+          *eta = 1.0f;
+          break;
 #endif
     default:
       *roughness = one_float2();
@@ -494,6 +506,10 @@ ccl_device_inline int bsdf_label(const KernelGlobals kg,
     case CLOSURE_BSDF_PRINCIPLED_SHEEN_ID:
       label = LABEL_REFLECT | LABEL_DIFFUSE;
       break;
+      case CLOSURE_BSDF_BRADLEY_BLINN_ID:
+      case CLOSURE_BSDF_BRADLEY_PHONG_ID:
+          label = LABEL_REFLECT | LABEL_DIFFUSE;
+          break;
 #endif
     default:
       label = LABEL_NONE;
@@ -599,6 +615,10 @@ ccl_device_inline
       break;
     case CLOSURE_BSDF_PRINCIPLED_SHEEN_ID:
       eval = bsdf_principled_sheen_eval(sc, sd->wi, wo, pdf);
+      break;
+    case CLOSURE_BSDF_BRADLEY_BLINN_ID:
+    case CLOSURE_BSDF_BRADLEY_PHONG_ID:
+      eval = bsdf_bradley_eval(sc, sd->wi, wo, pdf);
       break;
 #endif
     default:
