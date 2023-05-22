@@ -2837,6 +2837,7 @@ BradleyBsdfNode::BradleyBsdfNode() : BsdfNode(get_node_type())
 void BradleyBsdfNode::compile(SVMCompiler &compiler)
 {
     closure = algo;
+    printf("Closure: %i\n", closure);
     //BsdfNode::compile(compiler, input("Slider"), NULL);
     ShaderInput *diffuse_color_in = input("Diffuse Color");
     ShaderInput *specular_color_in = input("Specular Color");

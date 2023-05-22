@@ -548,7 +548,17 @@ static ShaderNode *add_node(Scene *scene,
     node = graph->create_node<DiffuseBsdfNode>();
   }
   else if (b_node.is_a(&RNA_ShaderNodeBsdfBradley)) {
-    node = graph->create_node<BradleyBsdfNode>();
+      BL::ShaderNodeBsdfBradley b_bradley_node(b_node);
+      BradleyBsdfNode *brad = graph->create_node<BradleyBsdfNode>();
+      switch (b_bradley_node.algo()){
+          case BL::ShaderNodeBsdfBradley::algo_PHONG:
+              brad->set_algo(CLOSURE_BSDF_BRADLEY_PHONG_ID);
+              break;
+          case BL::ShaderNodeBsdfBradley::algo_BLINN:
+              brad->set_algo(CLOSURE_BSDF_BRADLEY_BLINN_ID);
+              break;
+      }
+      node = brad;
   }
   else if (b_node.is_a(&RNA_ShaderNodeSubsurfaceScattering)) {
     BL::ShaderNodeSubsurfaceScattering b_subsurface_node(b_node);

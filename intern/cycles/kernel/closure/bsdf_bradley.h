@@ -34,8 +34,16 @@ ccl_device Spectrum bsdf_bradley_eval(ccl_private const ShaderClosure *sc,
     if(dot(wo, N) <= 0){
         spec = 0.0f;
     }else{
-        float dot_p = dot(wi, r);
-        spec = powf(dot_p > 0 ? dot_p : 0.0f, bsdf->reflection);
+        
+        if(bsdf->type == CLOSURE_BSDF_BRADLEY_PHONG_ID){
+            float dot_p = dot(wi, r);
+            spec = powf(dot_p > 0 ? dot_p : 0.0f, bsdf->reflection);
+        }else{
+            float3 H = (wo + wi)/sqrtf(fabsf(dot(wo+wi,wo+wi)));
+            float dot_h = dot(N, H);
+            spec = powf(dot_h > 0 ? dot_h : 0.0f, bsdf->reflection);
+        }
+        
     }
     
     return bsdf->diff_color*diff +bsdf->spec_color*spec;
