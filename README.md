@@ -8,51 +8,50 @@ I started from the blender 3.5.1 source code (tag v3.5.1 of https://projects.ble
 
 ```
 .
-└── blender/
-    ├── build_files/
-    │   ├── utils/
-    │   │   └── make_update.py
-    │   └── windows/
-    │       └── check_libraries.cmd
-    ├── intern/
-    │   └── cycles/
-    │       ├── blender/
-    │       │   └── shader.cpp
-    │       ├── kernel/
-    │       │   ├── closure/
-    │       │   │   ├── bsdf.h
-    │       │   │   └── bsdf_bradley.h
-    │       │   ├── CMakeLists.txt
-    │       │   └── svm/
-    │       │       ├── closure.h
-    │       │       └── types.h
-    │       └── scene/
-    │           ├── shader_nodes.cpp
-    │           └── shader_nodes.h
-    ├── scripts/
-    │   └── startup/
-    │       └── nodeitems_builtins.py
-    └── source/
-        └── blender/
-            ├── blenkernel/
-            │   └── BKE_node.h
-            ├── editors/
-            │   └── space_node/
-            │       └── drawnode.cc
-            ├── makesdna/
-            │   └── DNA_node_types.h
-            ├── makesrna/
-            │   └── intern/
-            │       └── rna_nodetree.c
-            └── nodes/
-                ├── NOD_static_types.h
-                └── shader/
-                    ├── CMakeLists.txt
-                    ├── nodes/
-                    │   └── node_shader_bsdf_bradley.cc
-                    ├── node_shader_register.cc
-                    ├── node_shader_register.hh
-                    └── node_shader_tree.cc
+├── build_files/
+│   ├── utils/
+│   │   └── make_update.py
+│   └── windows/
+│       └── check_libraries.cmd
+├── intern/
+│   └── cycles/
+│       ├── blender/
+│       │   └── shader.cpp
+│       ├── kernel/
+│       │   ├── closure/
+│       │   │   ├── bsdf.h
+│       │   │   └── bsdf_bradley.h
+│       │   ├── CMakeLists.txt
+│       │   └── svm/
+│       │       ├── closure.h
+│       │       └── types.h
+│       └── scene/
+│           ├── shader_nodes.cpp
+│           └── shader_nodes.h
+├── scripts/
+│   └── startup/
+│       └── nodeitems_builtins.py
+└── source/
+    └── blender/
+        ├── blenkernel/
+        │   └── BKE_node.h
+        ├── editors/
+        │   └── space_node/
+        │       └── drawnode.cc
+        ├── makesdna/
+        │   └── DNA_node_types.h
+        ├── makesrna/
+        │   └── intern/
+        │       └── rna_nodetree.c
+        └── nodes/
+            ├── NOD_static_types.h
+            └── shader/
+                ├── CMakeLists.txt
+                ├── nodes/
+                │   └── node_shader_bsdf_bradley.cc
+                ├── node_shader_register.cc
+                ├── node_shader_register.hh
+                └── node_shader_tree.cc
 ```
 ### BSDF_bradley.h
 This is where the main source code is. Specifically, it contains the functions that directly compute the brdf: ``bradley_brdf_eval`` and ``bradley_brdf_sample``. As the names imply, ``eval`` evaluates the brdf for a specific imcoming and outgoing light ray (``wi`` is the vector pointing towards the camera, where each path originates from, and ``wo`` is the vector pointing towards the light source). It returns a vector (Spectrum) of the brdf for R,G,B. I believe cycles uses this when it knows where the light is and wants to test the brdf at a specific angle (i.e. towards the light source). ``sample`` just takes an incoming light ray, as well as two random floats ``u`` and ``v`` ranging from 0 to 1 (I believe cycles is actually smart about these and they are not entirely random but that is beyond my understanding). It then decides on an output vector, as well as the ``pdf`` of that vector (which I assume gets used for Monte Carlo approximation down the line) and the  brdf evaluated for the output vector. In my implementation, I sample uniformly along the hemisphere surrounding the normal vector (``N`` which is the computed, potentially smoothed normal, rather than ``Ng`` which is the true geometric normal). In other words, I do not employ importance sampling, resulting in a potentially noisier image.
