@@ -1,3 +1,4 @@
+This is a fork of https://projects.blender.org/blender/blender.git
 # Final Project - Introduction to Computer Graphics
 In this course, we learned about how computers render 3D objects. When performing ray-tracing, one must model the function by which light bounces off an object, through something called a bidirectional reflectance distribution function (BRDF). For my final project, I wanted to try implementing some of the BRDF functions we learned, specifically the Phong and Blinn-Phong BRDFs. I did this by modifying the open-source blender software to add custom models. Note that this is NOT a supported feature of blender and therefore required extensive reverse engineering and modifications to the blender source code, contained in this repository.
 
