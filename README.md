@@ -59,6 +59,8 @@ This is where the main source code is. Specifically, it contains the functions t
 ### Other files
 All other files are to enable the custom shader to appear and function in the node editor. Files in ``source/blender`` deal with adding the node to the UI with the parameters and drop-down menu I wanted. The file in ``intern/cycles/blender`` translates the ENUM corresponding to the drop-down menu in my node into an ENUM cycles can understand. The files in ``intern/cycles/scene`` run on the CPU and translate the node-graph in the blender-gui into an encoded format to be rendered by cycles. I simply added my node there. Then, the files ``intern/cycles/kernel`` run on the GPU/CPU in the cycles virtual machine. ``intern/cycles/kernel/svm/closure.h`` decodes the encoded graph (wherein I once again had to add my node). If you want to find where in each of those files I made changes, you should be able just CMD-F "bradley" as most of the structs follow the same naming convention (which has my name in it :)).
 
+While the BSDF itself is not too complicated, the whole process of integrating it across >20 files with no documentation was a signficant effort.
+
 ### Limitations
 I did not test whether my node works with OSL and I have a feeling it does not (since I skipped that part in ``intern/cycles/scene/shader_nodes.cpp``) but you are welcome to try/fix it. Additionally, if you select viewport rendering (the second to last option on the top right in blender), anything using this shader will render as a black box since I did not implement the corresponding OpenGL.
 
